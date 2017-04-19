@@ -96,8 +96,36 @@
     def containAll(astr,strset):
         return not strset.translate(notrans,astr)
 
+### 简化字符串translate方法的使用
 
-        
+    import string
+    def translator(frm='',to='',delete='',keep=None):
+        if len(to) == 1:
+            to = to * len(frm)
+        trans = string.maketrans(frm,to)
+        if keep is not None:
+            allchars=string.maketrans(frm,to)
+            delete = allchars.translate(allchars,keep.translate(allchars,delete))
+        def translate(s):
+            return s.translate(trans,delete)
+        return translate
 
-    
+### 检查一个字符串是文本还是二进制
+
+    from __future__ import division   #确保/不会截断
+    import string
+    text_characters="".join(map(chr,range(32,127)))+"\n\r\t\b"
+    __null_trans=string.maketrans("","")
+    def is_text(s,text_characters=text_characters,threshold=0.30):
+        #若s包含空值，它不是文本
+        if "\0" in s:
+            return False
+        #一个“空”字符串是文本
+        if not s:
+            return True
+        #获得s的非文本字符串构成的子串
+        t=s.translate(__null_trans,text_characters)
+        #如果不超过30%的字符是非文本字符，s是字符串
+        return len(t)/len(s) <=threshold
+
 
