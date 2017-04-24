@@ -6,6 +6,7 @@
 * `python2_文本处理.md`
 * `python2_文件处理.md`
 * `python2_时间和财务计算.md`
+* `python2_搜索和排序.md`
 
 #### bash
 * `bash获取执行脚本目录的方法.md`
