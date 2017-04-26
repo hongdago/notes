@@ -10,6 +10,7 @@
 * `python2_面向对象.md`
 * `python2_持久化和数据库.md`
 * `python2_调试和测试.md`
+* `python2_进程、线程和同步`
 
 #### bash
 * `bash获取执行脚本目录的方法.md`
