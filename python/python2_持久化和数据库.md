@@ -203,3 +203,169 @@
         for column,desc in enumerate(cursor.description):
             results[desc[0]]=column
         return results
+
+### 打印数据库游标的内容
+
+    def pp(cursor,data=None,check_row_lengths=False):
+        if not data:
+            data=cursor.fetchall()
+        names=[]
+        lengths=[]
+        rules=[]
+        for col,field_description in enumerate(curosr.description):
+            field_name=field_description[0]
+            names.append(field_name)
+            field_length=field_description[3] or 12
+            field_length=max(field_length,len(field_name))
+            if check_row_lengths:
+                #如果不可靠，复查字段长度
+                data_length=max([len(str(row[col])) for row in data])
+                field_length = max(field_length,data_length)
+            lengths.append(field_length)
+            rules.append('-'*field_length)
+        format=" ".join(["%%-%ss" % l for  l in lengths])
+        result = [format % tuple(names),format % tuple(rules)]
+        for row in data:
+            result.append(format % tuple(row))
+        return "\n".join(result)
+
+### 适用于各种DB API模块的单参数传递风格
+
+    class Param(object):
+        '''封装单参数的类'''
+        def __init__(self,value):
+            self.value=value
+        def __repr__(self):
+            return 'Param(%r)' % (self.value)
+    def to_qmark(chunks):
+        '''用"?"风格准备sql查询'''
+        query_parts=[]
+        params=[]
+        for chunk in chunks:
+            if isinstance(chunk,Param):
+                params.append(chunk.value)
+                query_parts.append('?')
+            else:
+                query_parts.append(chunk)
+        return ''.join(query_parts),params
+    def to_numeric(chunks):
+        '''用":1"风格准备SQL查询'''
+        query_parts=[]
+        params=[]
+        for chunk in chunks:
+            if isinstance(chunk,Param):
+                params.append(chunk.value)
+                query_parts.append(":%d" % len(params))
+            else:
+                query_parts.append(chunk)
+        return ''.join(query_parts),tuple(params)
+    def to_named(chunks):
+        '''用":name"风格准备SQL查询'''
+        query_parts=[]
+        params={}
+        for chunk in chunks:
+            if isinstance(chunk,Param):
+                name='p%d' % len(params)
+                params[name]=chunk.value
+                query_parts.append(":%s" % name)
+            else:
+                query_parts.append(chunk)
+        return ''.join(query_parts),params
+    def to_format(chunks):
+        '''用"%s"风格准备SQL查询'''
+        query_parts=[]
+        params=[]
+        for chunk in chunks:
+            if isinstance(chunk,Param):
+                params.append(chunk.value)
+                query_parts.append("%s")
+            else:
+                query_parts.append(chunk)
+        return ''.join(query_parts),params
+    def to_pyformat(chunks):
+        '''用"%(name)s"风格准备SQL查询'''
+        query_parts=[]
+        params={}
+        for chunk in chunks:
+            if isinstance(chunk,Param):
+                name='p%d' % len(params)
+                params[name]=chunk.value
+                query_parts.append('%%(%s)s' % name)
+            else:
+                query_parts.append(chunk)
+        return ''.join(query_parts),params
+    converter={}
+    for paramstyle in('qmark','numeric','named','format','pyformat'):
+        converter[paramstyle]=globals()['to_'+paramstyle]
+    def execute(cursor,converter,chunks_query):
+        query,params=converter(chunker_query)
+        return cursor.execute(query,params)
+    if __name__=='__main__':
+        query=('SELECT * FROM test where field1> ' ,Param(10), ' AND field2 LIKE ' , Param('%value'))
+        print 'Query:' query
+        for paramstyle in('qmark','numeric','named','format','pyformat'):
+            print "%s : %r" % (paramstyle,converter[paramstyle](query))
+
+### 从Jython servlet 访问JDBC数据库
+
+    import java,javax
+    class emp(javax.servlet.http.HttpServlet):
+        def doGet(self,rquest,response):
+            '''遇到获取查询时,servlet一般是在回应输出流中写入
+            结果，在这个例子中我们忽略了请求，但在正常情况下，
+            那正是我们获取表单输入的地方
+            '''
+            #我们回以文本，所以必须相应地设置content type
+            response.setContentType('text/plain')
+            #获得输出流，用它完成查询，再关闭
+            out=response.getOutputStream()
+            self.dbQuery(out)
+            out.close()
+        def dbQuery(self,out):
+            #连接到oracle驱动，创建它的一个实例
+            driver="oracle.jdbc.driver.OracleDriver"
+            java.lang.Class.forName(driver).newInstance()
+            #指定用户名和密码获得一个连接
+            server,db="server","orcl"
+            url="jdbc:oracle:this:@"+server+":"+db
+            usr,passwd="scott","tiger"
+            conn=java.sql.DriverManager.getConnection(url,usr,passwd)
+            '''连接到mysql
+            driver="org.gjt.mm.mysql.Driver"
+            java.lang.Class.forName(driver).newInstance()
+            server,db="server","test"
+            usr,passed="root","passwd"
+            url="jdbc:mysql://%s/%s?user=%s&password=%s" % (server,db,usr,passwd)
+            conn=java.sql.DriverManager.getConnection(url)
+            '''
+            query="select EMPNO,ENAME,JOB FROM RMP"
+            stmt=conn.createStatement()
+            if stmt.execute(query)：
+                rs=stmt.getResultSet()
+                while rs and rs.next(0:
+                    out.println(rs.getString("EMPNO")
+                    out.println(rs.getString("ENAME")
+                    out.println(rs.getString("JOB")
+                    out.println()
+                stmt.close()
+                conn.close()
+
+
+### 通过Jython和ODBC获得Excel数据
+
+    from java import lang ,sql
+    lang.Class.forName('sun.jdbc.odbc.JdbcOdbcDriver')
+    excel_file='values.xls'
+    connection=sql.DriverManager.getConnection(
+        'jdbc:odbc:Driver={Microsoft Excel Driver(*.xls);DBQ=%s;\
+        READONLY=true}' % excel_file ,'','')
+    #Sheet1是我们需要的Excel工作簿的名字，查询的字段名
+    #是由第一行的每列的值设置的
+    record_set = connection.createStatement().executeQuery(
+        'SELECT * FROM [Sheet1$]'
+    #打印每个记录的第一列字段
+    while record_set.next():
+        print record_set.getString(1)
+    #完成后，关闭连接和记录集
+    record_set.close()
+    connection.close()

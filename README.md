@@ -8,6 +8,7 @@
 * `python2_时间和财务计算.md`
 * `python2_搜索和排序.md`
 * `python2_面向对象.md`
+* `python2_持久化和数据库.md`
 
 #### bash
 * `bash获取执行脚本目录的方法.md`
