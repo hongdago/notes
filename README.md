@@ -12,7 +12,9 @@
 * [python2_调试和测试.md](https://github.com/hongdago/notes/blob/master/python/python2_调试和测试.md)
 * [python2_进程、线程和同步.md](https://github.com/hongdago/notes/blob/master/python/python2_进程、线程和同步.md)
 * [python2_系统管理.md](https://github.com/hongdago/notes/blob/master/python/python2_系统管理.md)
-* [python2_XML处理](https://github.com/hongdago/notes/blob/master/python/python2_XML处理)
+* [python2_XML处理](https://github.com/hongdago/notes/blob/master/python/python2_XML处理.md)
+* [python2_网络编程](https://github.com/hongdago/notes/blob/master/python/python2_网络编程.md)
+* [python2_Web编程](https://github.com/hongdago/notes/blob/master/python/python2_Web编程.md)
 
 #### bash
 * [bash获取执行脚本目录的方法.md](https://github.com/hongdago/notes/blob/master/bash/bash获取执行脚本目录的方法.md)
