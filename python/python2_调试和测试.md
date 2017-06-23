@@ -176,6 +176,3 @@
                 self.assertNotInside((0*10),.1,.05)
                 self.assertNotInside((5*8),40.1,.2)
         unittest.main()
-            
-
-

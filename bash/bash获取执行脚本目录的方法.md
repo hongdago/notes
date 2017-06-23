@@ -5,6 +5,6 @@
 
 * 方法2：
 
-    `BASE_NAME=$(dirname $(readling -f $0))`
+    `BASE_NAME=$(dirname $(readlink -f $0))`
 
 
