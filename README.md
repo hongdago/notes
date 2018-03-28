@@ -24,5 +24,8 @@
 #### git
 * [解决git_status命令行中文显示的问题.md](https://github.com/hongdago/notes/blob/master/git/解决git_status命令行中文显示的问题.md)
 
+#### opensuse
+* [GTK应用程序的界面提示信息在KDE桌面环境中无法辨认的问题.md](https://github.com/hongdago/notes/blob/master/opensuse/GTK应用程序的界面提示信息在KDE桌面环境中无法辨认的问题.md)
+
 #### other
 * [自签名证书及私有CA证书的制作.md](https://github.com/hongdago/notes/blob/master/other/自签名证书及私有CA证书的制作.md)
